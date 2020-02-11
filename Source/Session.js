@@ -61,18 +61,96 @@ function Session(bytes)
 
 			divSession.appendChild(divFileOperations);
 
-			var divCursor = d.createElement("div");
+			var divCursorPosition = d.createElement("div");
 
 			var labelCursorPosition = d.createElement("label");
 			labelCursorPosition.innerHTML = "Cursor Position:";
-			divCursor.appendChild(labelCursorPosition);
+			divCursorPosition.appendChild(labelCursorPosition);
 
 			var inputCursorPosition = d.createElement("input");
 			inputCursorPosition.disabled = true;
 			this.inputCursorPosition = inputCursorPosition;
-			divCursor.appendChild(inputCursorPosition);
+			divCursorPosition.appendChild(inputCursorPosition);
 
-			divSession.appendChild(divCursor);
+			divSession.appendChild(divCursorPosition);
+
+			var divCursorValue = d.createElement("div");
+
+			var labelCursorValue = d.createElement("label");
+			labelCursorValue.innerHTML = "Value at Cursor as:";
+			divCursorValue.appendChild(labelCursorValue);
+
+			var divCursorValueEncoding = d.createElement("div");
+
+			var selectSignedOrUnsigned = d.createElement("select");
+			this.selectSignedOrUnsigned = selectSignedOrUnsigned;
+
+			var optionUnsigned = d.createElement("option");
+			optionUnsigned.innerHTML = "Unsigned";
+			selectSignedOrUnsigned.appendChild(optionUnsigned);
+
+			var optionSigned = d.createElement("option");
+			optionSigned.innerHTML = "Signed";
+			selectSignedOrUnsigned.appendChild(optionSigned);
+
+			divCursorValueEncoding.appendChild(selectSignedOrUnsigned);
+
+			var selectEndianness = d.createElement("select");
+			this.selectEndianness = selectEndianness;
+
+			var optionBig = d.createElement("option");
+			optionBig.innerHTML = "Big-Endian";
+			selectEndianness.appendChild(optionBig);
+
+			var optionLittle = d.createElement("option");
+			optionLittle.innerHTML = "Little-Endian";
+			selectEndianness.appendChild(optionLittle);
+
+			divCursorValueEncoding.appendChild(selectEndianness);
+
+			divCursorValue.appendChild(divCursorValueEncoding);
+
+			var divCursorValueByte = d.createElement("div");
+
+			var labelCursorValueByte = d.createElement("label");
+			labelCursorValueByte.innerHTML = "Byte:";
+			divCursorValueByte.appendChild(labelCursorValueByte);
+
+			var inputCursorValueByte = d.createElement("input");
+			inputCursorValueByte.disabled = true;
+			this.inputCursorValueByte = inputCursorValueByte;
+			divCursorValueByte.appendChild(inputCursorValueByte);
+
+			divCursorValue.appendChild(divCursorValueByte);
+
+			var divCursorValueShort = d.createElement("div");
+
+			var labelCursorValueShort = d.createElement("label");
+			labelCursorValueShort.innerHTML = "16 bit:";
+			divCursorValueShort.appendChild(labelCursorValueShort);
+
+			var inputCursorValueShort = d.createElement("input");
+			inputCursorValueShort.disabled = true;
+			this.inputCursorValueShort = inputCursorValueShort;
+			divCursorValueShort.appendChild(this.inputCursorValueShort);
+
+			divCursorValue.appendChild(divCursorValueShort);
+
+			var divCursorValueInt = d.createElement("div");
+
+			var labelCursorValueInt = d.createElement("label");
+			labelCursorValueInt.innerHTML = "32 bit:";
+			divCursorValueInt.appendChild(labelCursorValueInt);
+
+			var inputCursorValueInt = d.createElement("input");
+			inputCursorValueInt.disabled = true;
+			inputCursorValueInt.style.width = "200px";
+			this.inputCursorValueInt = inputCursorValueInt;
+			divCursorValueInt.appendChild(this.inputCursorValueInt);
+
+			divCursorValue.appendChild(divCursorValueInt);
+
+			divSession.appendChild(divCursorValue);
 
 			var divMain = d.getElementById("divMain");
 			divMain.appendChild(divSession);
@@ -99,10 +177,87 @@ function Session(bytes)
 		var cursorPos = Math.floor(this.textareaHexadecimal.selectionStart / charsPerByte);
 		var cursorPosAsString =
 			"0x" + cursorPos.toString(16)
-			+ "; 0d" + cursorPos
-			+ "; 0b" + cursorPos.toString(2);
+			+ "; " + cursorPos;
 
 		this.inputCursorPosition.value = cursorPosAsString;
+
+		var isSigned = (this.selectSignedOrUnsigned.selectedOptions[0].value == "Signed");
+		var isLittleEndian = (this.selectEndianness.selectedOptions[0].value == "Little-Endian");
+
+		var cursorValueByteAsHexadecimal = this.textareaHexadecimal.value.substr(cursorPos, 2);
+		var cursorValueByte = parseInt(cursorValueByteAsHexadecimal, 16);
+		if (isNaN(cursorValueByte) == false)
+		{
+			if (isSigned)
+			{
+				var valueMax = Math.pow(2, 7);
+				if (cursorValueByte > valueMax)
+				{
+					cursorValueByte = valueMax - cursorValueByte;
+				}
+			}
+
+			var cursorValueByteAsString =
+				"0x" + cursorValueByteAsHexadecimal
+				+ "; " + cursorValueByte
+				+ "; 0b" + cursorValueByte.toString(2);
+
+			this.inputCursorValueByte.value = cursorValueByteAsString;
+		}
+
+		var cursorValueShortAsHexadecimal = this.textareaHexadecimal.value.substr(cursorPos, 4);
+		if (isLittleEndian)
+		{
+			cursorValueShortAsHexadecimal =
+				cursorValueShortAsHexadecimal.substr(2)
+				+ cursorValueShortAsHexadecimal.substr(0, 2)
+		}
+		var cursorValueShort = parseInt(cursorValueShortAsHexadecimal, 16);
+		if (isNaN(cursorValueShort) == false)
+		{
+			if (isSigned)
+			{
+				var valueMax = Math.pow(2, 15);
+				if (cursorValueShort > valueMax)
+				{
+					cursorValueShort = valueMax - cursorValueShort;
+				}
+			}
+
+			var cursorValueShortAsString =
+				"0x" + cursorValueShortAsHexadecimal
+				+ "; " + cursorValueShort;
+
+			this.inputCursorValueShort.value = cursorValueShortAsString;
+		}
+
+		var cursorValueIntAsHexadecimal = this.textareaHexadecimal.value.substr(cursorPos, 8);
+		if (isLittleEndian)
+		{
+			cursorValueIntAsHexadecimal =
+				cursorValueIntAsHexadecimal.substr(6)
+				+ cursorValueIntAsHexadecimal.substr(4, 2)
+				+ cursorValueIntAsHexadecimal.substr(2, 2)
+				+ cursorValueIntAsHexadecimal.substr(0, 2)
+		}
+		var cursorValueInt = parseInt(cursorValueIntAsHexadecimal, 16);
+		if (isNaN(cursorValueInt) == false)
+		{
+			if (isSigned)
+			{
+				var valueMax = Math.pow(2, 31);
+				if (cursorValueInt > valueMax)
+				{
+					cursorValueInt = valueMax - cursorValueInt;
+				}
+			}
+
+			var cursorValueIntAsString =
+				"0x" + cursorValueIntAsHexadecimal
+				+ "; " + cursorValueInt;
+
+			this.inputCursorValueInt.value = cursorValueIntAsString;
+		}
 
 		var rowsVisible = this.textareaHexadecimal.rows;
 		var rowHeightInPixels = this.textareaHexadecimal.offsetHeight / rowsVisible;

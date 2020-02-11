@@ -1,4 +1,4 @@
- 
+
 function Globals()
 {
 	// do nothing

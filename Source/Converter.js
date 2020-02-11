@@ -7,7 +7,7 @@ function Converter()
 }
 
 {
-	Converter.AsciiCharacters = 
+	Converter.AsciiCharacters =
 		"␀☺☻♥♦♣♠•◘○◙♂♀♪♫☼►" // 0-16
 		+ "◄↕‼¶§▬↨↑↓→←∟↔▲▼␠" // 17-32
 		+ "!\"#$%&'()*+,-./0" // 33-48
